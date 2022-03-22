@@ -9,13 +9,30 @@ import matplotlib.pyplot as plt
 import argparse
 
 # User interface for easier use
-parser = argparse.ArgumentParser(description='Elastic pendulum simulation.')
-parser.add_argument('-D', '--spring_constant',  default=50.0, type=np.float64)
-parser.add_argument('-L', '--spring_length', default=1.2, type=np.float64)
-parser.add_argument('-m', '--mass_of_body', default=2.0, type=np.float64)
-parser.add_argument('-x', default=0.0, type=np.float64)
-parser.add_argument('-y', default=0.0, type=np.float64)
-parser.add_argument('-z', default=-1.0, type=np.float64)
+'''
+usage: rezges-lenges_PeterBenceX89O8X.py [-h] [-D SPRING_CONSTANT] [-L SPRING_LENGTH] [-m MASS_OF_BODY] [-x X] [-y Y] [-z Z]
+
+    Elastic pendulum simulation. Spring constant, spring length, the mass of the body and the starting coordinatescan be set with the flags above. Otherwise DEFAULT values are used.
+
+optional arguments:
+    -h, --help            show this help message and exit
+    -D SPRING_CONSTANT, --spring_constant SPRING_CONSTANT
+    default value 50.0
+    -L SPRING_LENGTH, --spring_length SPRING_LENGTH
+    default value 1.2
+    -m MASS_OF_BODY, --mass_of_body MASS_OF_BODY
+    default value 2.0
+    -x X                  starting coordinate X, default value 0.0
+    -y Y                  starting coordinate Y, default value 0.0
+    -z Z                  starting coordinate Z, default value -1.0
+'''
+parser = argparse.ArgumentParser(description='Elastic pendulum simulation. Spring constant, spring length, the mass of the body and the starting coordinatescan be set with the flags above. Otherwise DEFAULT values are used.')
+parser.add_argument('-D', '--spring_constant',  default=50.0, type=np.float64, help='default value 50.0')
+parser.add_argument('-L', '--spring_length', default=1.2, type=np.float64, help='default value 1.2')
+parser.add_argument('-m', '--mass_of_body', default=2.0, type=np.float64, help='default value 2.0')
+parser.add_argument('-x', default=0.0, type=np.float64, help='starting coordinate X, default value 0.0')
+parser.add_argument('-y', default=0.0, type=np.float64, help='starting coordinate Y, default value 0.0')
+parser.add_argument('-z', default=-1.0, type=np.float64, help='starting coordinate Z, default value -1.0')
 
 args = parser.parse_args()
 
@@ -73,7 +90,7 @@ def app():
     v0 = np.array([0,0,0], dtype=np.float64)
     dt = 0.01
 
-    F_fuggveny = F_rugos_inga # erofuggveny kivalasztasa
+    F_fuggveny = F_rugos_inga_kozeg # erofuggveny kivalasztasa
 
     x = x0; v = v0
     t = 0.0; t_max = 100.0
@@ -124,7 +141,7 @@ def app():
     ax1.set_zlabel('z')
     """
     
-    # 3D anim
+    # 3D animation plot
     history_len = x_arr.shape[0]
     fig3 = plt.figure(figsize=(15,15))
     axf3 = fig3.add_subplot(projection='3d')
