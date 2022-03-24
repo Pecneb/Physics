@@ -25,6 +25,7 @@ optional arguments:
     -x X                  starting coordinate X, default value 0.0
     -y Y                  starting coordinate Y, default value 0.0
     -z Z                  starting coordinate Z, default value -1.0
+    --chaotic CHAOTIC     flag to enable chaotic movement, and the value can be 0, D, L, m
 '''
 parser = argparse.ArgumentParser(description='Elastic pendulum simulation. Spring constant, spring length, the mass of the body and the starting coordinatescan be set with the flags above. Otherwise DEFAULT values are used.')
 parser.add_argument('-D', '--spring_constant',  default=50.0, type=np.float64, help='default value 50.0')
@@ -33,11 +34,9 @@ parser.add_argument('-m', '--mass_of_body', default=2.0, type=np.float64, help='
 parser.add_argument('-x', default=0.0, type=np.float64, help='starting coordinate X, default value 0.0')
 parser.add_argument('-y', default=0.0, type=np.float64, help='starting coordinate Y, default value 0.0')
 parser.add_argument('-z', default=-1.0, type=np.float64, help='starting coordinate Z, default value -1.0')
+parser.add_argument('--chaotic', default=0, help='flag to enable chaotic movement')
 
 args = parser.parse_args()
-
-# Default Spring constant D
-D = args.spring_constant
 
 # Default Length L
 L = args.spring_length
@@ -50,7 +49,12 @@ C_lin = 1.0
 
 # The mass of the body at the end of the elastic pendulum
 m = args.mass_of_body
-
+if args.chaotic == 1:
+    # The spring constant, when we cant to generate chaotic movements
+    D = (m * G) / L
+else:
+    # Default Spring constant D
+    D = args.spring_constant
 
 # Egyszeru mozgasegyenlet-megoldo
 def lepes(xn, vn, m, F, dt):
@@ -90,7 +94,7 @@ def app():
     v0 = np.array([0,0,0], dtype=np.float64)
     dt = 0.01
 
-    F_fuggveny = F_rugos_inga_kozeg # erofuggveny kivalasztasa
+    F_fuggveny = F_rugos_inga # erofuggveny kivalasztasa
 
     x = x0; v = v0
     t = 0.0; t_max = 100.0
