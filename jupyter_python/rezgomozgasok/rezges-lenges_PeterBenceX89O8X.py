@@ -10,9 +10,9 @@ import argparse
 
 # User interface for easier use
 '''
-usage: rezges-lenges_PeterBenceX89O8X.py [-h] [-D SPRING_CONSTANT] [-L SPRING_LENGTH] [-m MASS_OF_BODY] [-x X] [-y Y] [-z Z]
+age: rezges-lenges_PeterBenceX89O8X.py [-h] [-D SPRING_CONSTANT] [-L SPRING_LENGTH] [-m MASS_OF_BODY] [-x X] [-y Y] [-z Z] [--chaoticD CHAOTICD] [--chaoticL CHAOTICL] [--chaoticM CHAOTICM]
 
-    Elastic pendulum simulation. Spring constant, spring length, the mass of the body and the starting coordinatescan be set with the flags above. Otherwise DEFAULT values are used.
+Elastic pendulum simulation. Spring constant, spring length, the mass of the body and the starting coordinatescan be set with the flags above. Otherwise DEFAULT values are used.
 
 optional arguments:
     -h, --help            show this help message and exit
@@ -25,7 +25,9 @@ optional arguments:
     -x X                  starting coordinate X, default value 0.0
     -y Y                  starting coordinate Y, default value 0.0
     -z Z                  starting coordinate Z, default value -1.0
-    --chaotic CHAOTIC     flag to enable chaotic movement, and the value can be 0, D, L, m
+    --chaoticD CHAOTICD   flag to enable chaotic movement, and calc D from m and L
+    --chaoticL CHAOTICL   flag to enable chaotic movement, and calc L from m and D
+    --chaoticM CHAOTICM   flag to enable chaotic movement, and calc m from D and L
 '''
 parser = argparse.ArgumentParser(description='Elastic pendulum simulation. Spring constant, spring length, the mass of the body and the starting coordinatescan be set with the flags above. Otherwise DEFAULT values are used.')
 parser.add_argument('-D', '--spring_constant',  default=50.0, type=np.float64, help='default value 50.0')
@@ -34,12 +36,11 @@ parser.add_argument('-m', '--mass_of_body', default=2.0, type=np.float64, help='
 parser.add_argument('-x', default=0.0, type=np.float64, help='starting coordinate X, default value 0.0')
 parser.add_argument('-y', default=0.0, type=np.float64, help='starting coordinate Y, default value 0.0')
 parser.add_argument('-z', default=-1.0, type=np.float64, help='starting coordinate Z, default value -1.0')
-parser.add_argument('--chaotic', default=0, help='flag to enable chaotic movement')
+parser.add_argument('--chaoticD', help='flag to enable chaotic movement, and calc D from m and L')
+parser.add_argument('--chaoticL', help='flag to enable chaotic movement, and calc L from m and D')
+parser.add_argument('--chaoticM', help='flag to enable chaotic movement, and calc m from D and L')
 
 args = parser.parse_args()
-
-# Default Length L
-L = args.spring_length
 
 # Force of Gravity (vector format) 
 G = np.array([0,0,-9.81], dtype=np.float64) # Can vary, based on where are you on earth.
@@ -47,14 +48,41 @@ G = np.array([0,0,-9.81], dtype=np.float64) # Can vary, based on where are you o
 # Linear body constant (at low velocity!)
 C_lin = 1.0
 
-# The mass of the body at the end of the elastic pendulum
-m = args.mass_of_body
-if args.chaotic == 1:
-    # The spring constant, when we cant to generate chaotic movements
+# Chaotic movement can be achieved when Tpendulum and Tspring is equal
+if args.chaoticD == 1:
+    # Default Length L
+    L = args.spring_length
+    
+    # The mass of the body at the end of the elastic pendulum
+    m = args.mass_of_body
+
     D = (m * G) / L
-else:
+elif args.chaoticL == 1:
     # Default Spring constant D
     D = args.spring_constant
+   
+    # The mass of the body at the end of the elastic pendulum
+    m = args.mass_of_body
+
+    L = (m * G) / D
+elif args.chaoticM == 1:
+    # Default Length L
+    L = args.spring_length
+    
+    # Default Spring constant D
+    D = args.spring_constant
+   
+    m = (L * D) / G
+else:
+    # Default Length L
+    L = args.spring_length
+    # The mass of the body at the end of the elastic pendulum
+    m = args.mass_of_body
+    # Default Spring constant D
+    D = args.spring_constant
+   
+
+
 
 # Egyszeru mozgasegyenlet-megoldo
 def lepes(xn, vn, m, F, dt):
@@ -151,16 +179,11 @@ def app():
     axf3 = fig3.add_subplot(projection='3d')
     axf3.grid()
 
-    fixation_point = np.array([0.0, 0.0, L], dtype=np.float64)
-
     line, = axf3.plot([], [], [], '.-', lw=1, ms=2)
     body, = axf3.plot([], [], [], 'ro')
-    pend, = axf3.plot([], [], [], '-', color='green')
     axf3.set(xlim3d=(x_arr[:,:].min(), x_arr[:,:].max()), xlabel='X')
     axf3.set(ylim3d=(x_arr[:,:].min(), x_arr[:,:].max()), ylabel='Y')
     axf3.set(zlim3d=(x_arr[:,:].min(), x_arr[:,:].max()), zlabel='Z')
-    time_template = 'time = %.1fs'
-    time_template = 'time = %.1fs'
     time_template = 'time = %.1fs'
     time_text = axf3.text(0.05, 0.05, 0.9, s='', transform=axf3.transAxes)
 
@@ -169,10 +192,8 @@ def app():
         line.set_3d_properties(z[:i])
         body.set_data(x[i], y[i])
         body.set_3d_properties(z[i])
-        pend.set_data(np.array([fixation_point[0], x[i]]),np.array([fixation_point[1], y[i]]))
-        pend.set_3d_properties(np.array([fixation_point[2], z[i]]))
         time_text.set_text(time_template % (i*dt))
-        return line, body, pend, time_text
+        return line, body, time_text
 
     ani = animation.FuncAnimation(
             fig3, animate, fargs=(x_arr[:,0], x_arr[:,1], x_arr[:,2]),
