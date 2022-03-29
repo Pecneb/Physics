@@ -12,7 +12,7 @@ import argparse
 '''
 age: rezges-lenges_PeterBenceX89O8X.py [-h] [-D SPRING_CONSTANT] [-L SPRING_LENGTH] [-m MASS_OF_BODY] [-x X] [-y Y] [-z Z] [--chaoticD CHAOTICD] [--chaoticL CHAOTICL] [--chaoticM CHAOTICM]
 
-Elastic pendulum simulation. Spring constant, spring length, the mass of the body and the starting coordinatescan be set with the flags above. Otherwise DEFAULT values are used. example usage: python3 programname.py --chaoticD 1 -L 1.2 -m 2.0 -x 0.01 -z -0.01
+Elastic pendulum simulation. Spring constant, spring length, the mass of the body and the starting coordinatescan be set with the flags above. Otherwise DEFAULT values are used. example usage: python3 programname.py --chaoticD -L 1.2 -m 2.0 -x 0.01 -z -0.01
 
 optional arguments:
     -h, --help            show this help message and exit
