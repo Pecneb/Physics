@@ -75,6 +75,8 @@ else:
     # Default Spring constant D
     D = args.spring_constant
 
+FIX = np.array([0.0, 0.0, L]) # rugos / inga rogzitesi pontja
+
 # Egyszeru mozgasegyenlet-megoldo
 def lepes(xn, vn, m, F, dt):
     a = F(xn, vn, m) / m
@@ -181,8 +183,8 @@ def app():
     def animate(i, x, y, z):
         line.set_data(x[:i], y[:i])
         line.set_3d_properties(z[:i])
-        body.set_data(x[i], y[i])
-        body.set_3d_properties(z[i])
+        body.set_data(np.array([x[i]]), np.array([y[i]]))
+        body.set_3d_properties(np.array([z[i]]))
         time_text.set_text(time_template % (i*dt))
         return line, body, time_text
 
