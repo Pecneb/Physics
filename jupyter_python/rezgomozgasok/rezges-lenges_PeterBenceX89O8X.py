@@ -36,9 +36,9 @@ parser.add_argument('-m', '--mass_of_body', default=2.0, type=np.float64, help='
 parser.add_argument('-x', default=0.0, type=np.float64, help='starting coordinate X, default value 0.0')
 parser.add_argument('-y', default=0.0, type=np.float64, help='starting coordinate Y, default value 0.0')
 parser.add_argument('-z', default=-1.0, type=np.float64, help='starting coordinate Z, default value -1.0')
-parser.add_argument('--chaoticD', choices=[1], help='flag to enable chaotic movement, and calc D from m and L')
-parser.add_argument('--chaoticL', choices=[1], help='flag to enable chaotic movement, and calc L from m and D')
-parser.add_argument('--chaoticM', choices=[1], help='flag to enable chaotic movement, and calc m from D and L')
+parser.add_argument('--chaoticD', default=False, action='store_true', help='flag to enable chaotic movement, and calc D from m and L')
+parser.add_argument('--chaoticL', default=False, action='store_true', help='flag to enable chaotic movement, and calc L from m and D')
+parser.add_argument('--chaoticM', default=False, action='store_true', help='flag to enable chaotic movement, and calc m from D and L')
 
 args = parser.parse_args()
 
@@ -49,30 +49,24 @@ G = np.array([0,0,-9.81], dtype=np.float64) # Can vary, based on where are you o
 C_lin = 1.0
 
 # Chaotic movement can be achieved when Tpendulum and Tspring is equal
-if args.chaoticD == 1:
+if args.chaoticD:
     # Default Length L
     L = args.spring_length
-    
     # The mass of the body at the end of the elastic pendulum
     m = args.mass_of_body
-
-    D = (m * G) / L
-elif args.chaoticL == 1:
-    # Default Spring constant D
+    D = (m * (G**2).sum()**0.5) / L
+elif args.chaoticL:
+    # Default Spring constant
     D = args.spring_constant
-   
     # The mass of the body at the end of the elastic pendulum
     m = args.mass_of_body
-
-    L = (m * G) / D
-elif args.chaoticM == 1:
+    L = (m * (G**2).sum()**0.5) / D
+elif args.chaoticM:
     # Default Length L
     L = args.spring_length
-    
     # Default Spring constant D
     D = args.spring_constant
-   
-    m = (L * D) / G
+    m = (L * D) / (G**2).sum()**0.5
 else:
     # Default Length L
     L = args.spring_length
@@ -80,9 +74,6 @@ else:
     m = args.mass_of_body
     # Default Spring constant D
     D = args.spring_constant
-   
-
-
 
 # Egyszeru mozgasegyenlet-megoldo
 def lepes(xn, vn, m, F, dt):
