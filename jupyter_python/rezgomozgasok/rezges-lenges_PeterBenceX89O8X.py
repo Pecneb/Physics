@@ -39,6 +39,8 @@ parser.add_argument('-z', default=-1.0, type=np.float64, help='starting coordina
 parser.add_argument('--chaoticD', default=False, action='store_true', help='flag to enable chaotic movement, and calc D from m and L')
 parser.add_argument('--chaoticL', default=False, action='store_true', help='flag to enable chaotic movement, and calc L from m and D')
 parser.add_argument('--chaoticM', default=False, action='store_true', help='flag to enable chaotic movement, and calc m from D and L')
+parser.add_argument('--dimensions', default=2, choices=[2,3], type=int, help='Set the animation dimensions.')
+parser.add_argument('--drag', default=False, action='store_true', help='Use flag --drag, when want to calculate with drag force.')
 
 args = parser.parse_args()
 
@@ -115,7 +117,10 @@ def app():
     v0 = np.array([0,0,0], dtype=np.float64)
     dt = 0.01
 
-    F_fuggveny = F_rugos_inga # erofuggveny kivalasztasa
+    if args.drag:
+        F_fuggveny = F_rugos_inga_kozeg # erofuggveny kivalasztasa
+    elif not args.drag:
+        F_fuggveny = F_rugos_inga
 
     x = x0; v = v0
     t = 0.0; t_max = 100.0
@@ -166,33 +171,59 @@ def app():
     ax1.set_zlabel('z')
     """
     
-    # 3D animation plot
-    history_len = x_arr.shape[0]
-    fig3 = plt.figure(figsize=(15,15))
-    axf3 = fig3.add_subplot(projection='3d')
-    axf3.grid()
+    if args.dimensions == 2:
+        # 2D animation plot
+        history_len = x_arr.shape[0]
+        fig3 = plt.figure(figsize=(15,15))
+        axf3 = fig3.add_subplot()
+        axf3.grid()
 
-    line, = axf3.plot([], [], [], '.-', lw=1, ms=2)
-    body, = axf3.plot([], [], [], 'ro')
-    axf3.set(xlim3d=(x_arr[:,:].min(), x_arr[:,:].max()), xlabel='X')
-    axf3.set(ylim3d=(x_arr[:,:].min(), x_arr[:,:].max()), ylabel='Y')
-    axf3.set(zlim3d=(x_arr[:,:].min(), x_arr[:,:].max()), zlabel='Z')
-    time_template = 'time = %.1fs'
-    time_text = axf3.text(0.05, 0.05, 0.9, s='', transform=axf3.transAxes)
+        line, = axf3.plot([], [], '.-', lw=1, ms=2)
+        body, = axf3.plot([], [], 'ro')
+        axf3.set(xlim=(x_arr[:,:].min(), x_arr[:,:].max()), xlabel='X')
+        axf3.set(ylim=(x_arr[:,:].min(), x_arr[:,:].max()), ylabel='Z')
+        time_template = 'time = %.1fs'
+        time_text = axf3.text(0.05, 0.9, s='', transform=axf3.transAxes)
 
-    def animate(i, x, y, z):
-        line.set_data(x[:i], y[:i])
-        line.set_3d_properties(z[:i])
-        body.set_data(np.array([x[i]]), np.array([y[i]]))
-        body.set_3d_properties(np.array([z[i]]))
-        time_text.set_text(time_template % (i*dt))
-        return line, body, time_text
+        def animate(i, x, z):
+            line.set_data(x[:i], z[:i])
+            body.set_data(np.array([x[i]]), np.array([z[i]]))
+            time_text.set_text(time_template % (i*dt))
+            return line, body, time_text
 
-    ani = animation.FuncAnimation(
-            fig3, animate, fargs=(x_arr[:,0], x_arr[:,1], x_arr[:,2]),
-    interval=dt, blit=True)
+        ani = animation.FuncAnimation(
+                fig3, animate, fargs=(x_arr[:,0], x_arr[:,2]),
+        interval=dt, blit=True)
 
-    plt.show()
+        plt.show()
+    else:
+        # 2D animation plot
+        history_len = x_arr.shape[0]
+        fig3 = plt.figure(figsize=(15,15))
+        axf3 = fig3.add_subplot(projection='3d')
+        axf3.grid()
+
+        line, = axf3.plot([], [], [], '.-', lw=1, ms=2)
+        body, = axf3.plot([], [], [], 'ro')
+        axf3.set(xlim3d=(x_arr[:,:].min(), x_arr[:,:].max()), xlabel='X')
+        axf3.set(ylim3d=(x_arr[:,:].min(), x_arr[:,:].max()), ylabel='Y')
+        axf3.set(zlim3d=(x_arr[:,:].min(), x_arr[:,:].max()), zlabel='Z')
+        time_template = 'time = %.1fs'
+        time_text = axf3.text(0.05, 0.05, 0.9, s='', transform=axf3.transAxes)
+
+        def animate(i, x, y, z):
+            line.set_data(x[:i], y[:i])
+            line.set_3d_properties(z[:i])
+            body.set_data(np.array([x[i]]), np.array([y[i]]))
+            body.set_3d_properties(np.array([z[i]]))
+            time_text.set_text(time_template % (i*dt))
+            return line, body, time_text
+
+        ani = animation.FuncAnimation(
+                fig3, animate, fargs=(x_arr[:,0], x_arr[:,1], x_arr[:,2]),
+        interval=dt, blit=True)
+
+        plt.show()
 
 def main():
     app() 
