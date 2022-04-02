@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import argparse
+import scipy.spatial.distance as distance
 
 # User interface for easier use
 '''
@@ -104,12 +105,12 @@ def F_rugo_kozeg_lin(r, v, m):
 
 # 3D rugos-inga
 def F_rugos_inga(r, v, m):
-    F = F_rugo(r, v, m) + F_inga(r, v, m)
+    F = F_rugo(r, v, m) + (m * G * np.sin(r/np.linalg.norm(FIX-r)))
     return F
 
 # 3D rugos-inga kozegellenallassal
 def F_rugos_inga_kozeg(r, v, m):
-    F = F_rugo_kozeg_lin(r, v, m) + F_inga(r, v, m)
+    F = F_rugo_kozeg_lin(r, v, m) + (m * G * np.sin(r/np.linalg.norm(FIX-r)))
     return F
 
 def app():
