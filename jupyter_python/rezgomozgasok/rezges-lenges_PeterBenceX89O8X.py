@@ -42,6 +42,7 @@ parser.add_argument('--chaoticL', default=False, action='store_true', help='flag
 parser.add_argument('--chaoticM', default=False, action='store_true', help='flag to enable chaotic movement, and calc m from D and L')
 parser.add_argument('--dimensions', default=2, choices=[2,3], type=int, help='Set the animation dimensions.')
 parser.add_argument('--drag', default=False, action='store_true', help='Use flag --drag, when want to calculate with drag force.')
+parser.add_argument('--Tratio', default=1, type=np.float64, help='Period T time ratio.')
 
 args = parser.parse_args()
 
@@ -57,19 +58,19 @@ if args.chaoticD:
     L = args.spring_length
     # The mass of the body at the end of the elastic pendulum
     m = args.mass_of_body
-    D = (m * (G**2).sum()**0.5) / (np.pi**2 * L)
+    D = (1 / args.Tratio**2) * ((m * (G**2).sum()**0.5) / L)
 elif args.chaoticL:
     # Default Spring constant
     D = args.spring_constant
     # The mass of the body at the end of the elastic pendulum
     m = args.mass_of_body
-    L = (m * (G**2).sum()**0.5) / (np.pi**2 * D)
+    L = (1 / args.Tratio**2) * ((m * (G**2).sum()**0.5) / D)
 elif args.chaoticM:
     # Default Length L
     L = args.spring_length
     # Default Spring constant D
     D = args.spring_constant
-    m = (np.pi**2 * L * D) / (G**2).sum()**0.5
+    m = (args.Tratio**2) * ((L * D) / (G**2).sum()**0.5)
 else:
     # Default Length L
     L = args.spring_length
