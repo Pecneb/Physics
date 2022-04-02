@@ -13,7 +13,7 @@ import scipy.spatial.distance as distance
 '''
 age: rezges-lenges_PeterBenceX89O8X.py [-h] [-D SPRING_CONSTANT] [-L SPRING_LENGTH] [-m MASS_OF_BODY] [-x X] [-y Y] [-z Z] [--chaoticD CHAOTICD] [--chaoticL CHAOTICL] [--chaoticM CHAOTICM]
 
-Elastic pendulum simulation. Spring constant, spring length, the mass of the body and the starting coordinatescan be set with the flags above. Otherwise DEFAULT values are used. example usage: python3 programname.py --chaoticD -L 1.2 -m 2.0 -x 0.01 -z -0.01
+Elastic pendulum simulation. Spring constant, spring length, the mass of the body and the starting coordinatescan be set with the flags above. Otherwise DEFAULT values are used. example usage: python3 rezges-lenges_PeterBenceX89O8X.py --chaoticL -D 15.0 -m 0.5 -x 0.05 -z -0.03
 
 optional arguments:
     -h, --help            show this help message and exit
@@ -51,25 +51,25 @@ G = np.array([0,0,-9.81], dtype=np.float64) # Can vary, based on where are you o
 # Linear body constant (at low velocity!)
 C_lin = 1.0
 
-# Chaotic movement can be achieved when Tpendulum and Tspring is equal
+# Chaotic movement can be achieved when Tpendulum and Tspring ratio is irrational (PI multiplier is hardcoded here)
 if args.chaoticD:
     # Default Length L
     L = args.spring_length
     # The mass of the body at the end of the elastic pendulum
     m = args.mass_of_body
-    D = (m * (G**2).sum()**0.5) / L
+    D = (m * (G**2).sum()**0.5) / (np.pi**2 * L)
 elif args.chaoticL:
     # Default Spring constant
     D = args.spring_constant
     # The mass of the body at the end of the elastic pendulum
     m = args.mass_of_body
-    L = (m * (G**2).sum()**0.5) / D
+    L = (m * (G**2).sum()**0.5) / (np.pi**2 * D)
 elif args.chaoticM:
     # Default Length L
     L = args.spring_length
     # Default Spring constant D
     D = args.spring_constant
-    m = (L * D) / (G**2).sum()**0.5
+    m = (np.pi**2 * L * D) / (G**2).sum()**0.5
 else:
     # Default Length L
     L = args.spring_length
@@ -195,8 +195,6 @@ def app():
         ani = animation.FuncAnimation(
                 fig3, animate, fargs=(x_arr[:,0], x_arr[:,2]),
         interval=dt, blit=True)
-
-        plt.show()
     else:
         # 2D animation plot
         history_len = x_arr.shape[0]
@@ -224,7 +222,11 @@ def app():
                 fig3, animate, fargs=(x_arr[:,0], x_arr[:,1], x_arr[:,2]),
         interval=dt, blit=True)
 
-        plt.show()
+    V_Fig = plt.figure(figsize=(15,15))
+    V_ax = V_Fig.add_subplot()
+    V_ax.grid()
+    V_ax.plot(v_arr[:,2], x_arr[:,2])
+    plt.show()
 
 def main():
     app() 
