@@ -30,7 +30,7 @@ optional arguments:
     --chaoticL CHAOTICL   flag to enable chaotic movement, and calc L from m and D
     --chaoticM CHAOTICM   flag to enable chaotic movement, and calc m from D and L
 '''
-parser = argparse.ArgumentParser(description='Elastic pendulum simulation. Spring constant, spring length, the mass of the body and the starting coordinatescan be set with the flags above. Otherwise DEFAULT values are used. example usage: python3 programname.py --chaoticD 1 -L 1.2 -m 2.0 -x 0.01 -z -0.01')
+parser = argparse.ArgumentParser(description='Elastic pendulum simulation. Spring constant, spring length, the mass of the body and the starting coordinatescan be set with the flags above. Otherwise DEFAULT values are used. example usage: python3 rezges-lenges_PeterBenceX89O8X.py --chaoticL -D 15.0 -m 0.5 -x 0.05 -z -0.03')
 parser.add_argument('-D', '--spring_constant',  default=50.0, type=np.float64, help='default value 50.0')
 parser.add_argument('-L', '--spring_length', default=1.2, type=np.float64, help='default value 1.2')
 parser.add_argument('-m', '--mass_of_body', default=2.0, type=np.float64, help='default value 2.0')
